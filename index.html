@@ -20,12 +20,22 @@
 	<script src="graph.js"></script>
 	<script>
 		$(function(){
-			var graph = new Graphing.ForceGraph();	
+			var graph = new Graphing.ForceGraph(900, 600);	
 	 	   graph.render();
+	 	   $("input").click(function() {
+	 	   	 $("[data-productions]").css("fill", "steelblue");
+	 	   	 $("[data-productions*='" + $(this).attr("data-production") + "']").css("fill", "green");
+	 	   	});
+		});
 
-		})
 	</script>
 </head>
 <body>
-
+	<input type="button" data-production="Firefly" value="Firefly"></input>
+	<input type="button" data-production="BuffytheVampireSlayer" value="Buffy the Vampire Slayer"></input>
+	<input type="button" data-production="Dr.HorriblesSing-AlongBlog" value="Dr. Horrible's Sing-Along Blog"></input>
+	<input type="button" data-production="MuchAdoAboutNothing" value="Much Ado About Nothing"></input>
+	<input type="button" data-production="Dollhouse" value="Dollhouse"></input>
+	<input type="button" data-production="Angel" value="Angel"></input>
+	<input type="button" data-production="TheCabinintheWoods" value="The Cabin in the Woods"></input>
 </body>

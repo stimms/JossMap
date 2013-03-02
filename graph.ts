@@ -4,47 +4,26 @@ declare var $: any;
 module Graphing
 {
   export class ForceGraph{
+
+    constructor(public width: number, public height: number){
+      
+    }
+
     render()
     {
-      var width = 960,
-          height = 500;
-
       var force = d3.layout.force()
           .charge(-220)
-          .linkDistance(250)
-          .size([width, height]);
+          .linkDistance(220)
+          .size([this.width, this.height]);
 
       var svg = d3.select("body").append("svg")
-          .attr("width", width)
-          .attr("height", height);
+          .attr("width", this.width)
+          .attr("height", this.height);
 
-      var links = new Array();
-      d3.json("data.json", function(error, graph) {
+      
+      d3.json("data.json", (error, graph) => {
         
-        for(var i = 0; i<graph.nodes.length; i++)
-        {
-          for(var j = i; j<graph.nodes.length; j++)
-          {
-            if(i!=j)
-            {
-              var strength = 0;
-              $.each(graph.nodes[i].Productions, (_, source) =>
-              {
-                $.each(graph.nodes[j].Productions, (_, target) =>
-                {
-                  if(source.Name == target.Name)
-                  {
-                    strength+=1;
-
-                  }
-                })
-              });
-              if(strength > 0)
-                links.push({"source": i, "target": j, "value": strength});
-            }
-          }
-          
-        }
+        var links = this.setUpLinks(graph);
         force
             .nodes(graph.nodes)
             .links(links)
@@ -94,5 +73,33 @@ module Graphing
         });
       });
     }
+
+  setUpLinks(graph)
+    {
+      var links = new Array();
+      for(var i = 0; i<graph.nodes.length; i++)
+      {
+        for(var j = i; j<graph.nodes.length; j++)
+        {
+          if(i!=j)
+          {
+            var strength = 0;
+            $.each(graph.nodes[i].Productions, (_, source) =>
+            {
+              $.each(graph.nodes[j].Productions, (_, target) =>
+              {
+                if(source.Name == target.Name)
+                {
+                  strength+=1;
+                }
+              })
+            });
+            if(strength > 0)
+              links.push({"source": i, "target": j, "value": strength});
+          }
+        } 
+      }
+      return links;
+    }    
   }
 }

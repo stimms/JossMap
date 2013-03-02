@@ -1,37 +1,19 @@
 var Graphing;
 (function (Graphing) {
     var ForceGraph = (function () {
-        function ForceGraph() { }
+        function ForceGraph(width, height) {
+            this.width = width;
+            this.height = height;
+        }
         ForceGraph.prototype.render = function () {
-            var width = 960, height = 500;
-            var force = d3.layout.force().charge(-220).linkDistance(250).size([
-                width, 
-                height
+            var _this = this;
+            var force = d3.layout.force().charge(-220).linkDistance(220).size([
+                this.width, 
+                this.height
             ]);
-            var svg = d3.select("body").append("svg").attr("width", width).attr("height", height);
-            var links = new Array();
+            var svg = d3.select("body").append("svg").attr("width", this.width).attr("height", this.height);
             d3.json("data.json", function (error, graph) {
-                for(var i = 0; i < graph.nodes.length; i++) {
-                    for(var j = i; j < graph.nodes.length; j++) {
-                        if(i != j) {
-                            var strength = 0;
-                            $.each(graph.nodes[i].Productions, function (_, source) {
-                                $.each(graph.nodes[j].Productions, function (_, target) {
-                                    if(source.Name == target.Name) {
-                                        strength += 1;
-                                    }
-                                });
-                            });
-                            if(strength > 0) {
-                                links.push({
-                                    "source": i,
-                                    "target": j,
-                                    "value": strength
-                                });
-                            }
-                        }
-                    }
-                }
+                var links = _this.setUpLinks(graph);
                 force.nodes(graph.nodes).links(links).start();
                 var link = svg.selectAll(".link").data(links).enter().append("line").attr("class", "link").style("stroke-width", function (d) {
                     return Math.sqrt(d.value);
@@ -69,6 +51,31 @@ var Graphing;
                     });
                 });
             });
+        };
+        ForceGraph.prototype.setUpLinks = function (graph) {
+            var links = new Array();
+            for(var i = 0; i < graph.nodes.length; i++) {
+                for(var j = i; j < graph.nodes.length; j++) {
+                    if(i != j) {
+                        var strength = 0;
+                        $.each(graph.nodes[i].Productions, function (_, source) {
+                            $.each(graph.nodes[j].Productions, function (_, target) {
+                                if(source.Name == target.Name) {
+                                    strength += 1;
+                                }
+                            });
+                        });
+                        if(strength > 0) {
+                            links.push({
+                                "source": i,
+                                "target": j,
+                                "value": strength
+                            });
+                        }
+                    }
+                }
+            }
+            return links;
         };
         return ForceGraph;
     })();
